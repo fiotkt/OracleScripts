@@ -1,0 +1,47 @@
+#!/bin/sh
+#
+# Duplicate from apebo101:PESB to apebo401:PESBS
+#
+# Startup the stby instance in nomount.
+
+echo "Starting duplicate at `date`"
+
+export NLS_DATE_FORMAT="DD-MON-RR HH24:MI:SS"
+
+SYSPWD=hiISbW4Swzyr#1d
+TNS=PESBS
+
+# Target (i.e. TNS) instance on stby server must be started nomount
+
+###rman target / <<EOF
+###connect catalog rman/b4ck3mup@rmanprd
+
+rman target / nocatalog <<EOF
+connect auxiliary sys/${SYSPWD}@${TNS}
+RUN {
+ALLOCATE CHANNEL d1 TYPE DISK;
+ALLOCATE AUXILIARY CHANNEL cnv1 TYPE DISK;
+DUPLICATE TARGET DATABASE
+FOR STANDBY
+FROM ACTIVE DATABASE
+DORECOVER
+SPFILE
+SET db_unique_name='PESBS'
+SET control_files='+DATA','+ONLINE1','+ONLINE2'
+SET instance_number='1'
+SET log_file_name_convert = 'PESB','PESBS'
+SET db_file_name_convert = 'PESB','PESBS'
+SET log_archive_dest_1='location=+FRA valid_for=(ALL_LOGFILES,ALL_ROLES) db_unique_name=PESBS'
+SET log_archive_dest_2='service=PESB ASYNC valid_for=(ONLINE_LOGFILE,PRIMARY_ROLE) db_unique_name=PESB'
+SET fal_client='PESBS'
+SET fal_server='PESB'
+SET standby_file_management='AUTO'
+SET log_archive_config='dg_config=(PESB,PESBS)'
+NOFILENAMECHECK;
+}
+
+
+exit
+EOF
+
+echo "Finished duplicate at `date`"
