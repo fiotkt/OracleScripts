@@ -1,0 +1,2 @@
+select process, status, thread#, sequence#,CLIENT_PROCESS, DELAY_MINS
+from v$managed_standby;
