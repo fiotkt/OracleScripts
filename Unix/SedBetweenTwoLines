@@ -1,0 +1,1 @@
+sed between two lines (grep and then sed) sed -n 15768966,16307220p client_2296.trc >lee.txt
