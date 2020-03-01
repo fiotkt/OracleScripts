@@ -1,0 +1,67 @@
+•	Database environment build and support
+•	Database availability and the security/integrity of the data
+•	Database sizing and performance
+•	Database consultancy
+Support Area Prime Contact	Mark Vickerman
+1.1.2.	Documentation Required 
+#	Document Name	Document Description	Required by When	SAC
+Ref
+
+1	Application Roadmap	Where possible we would like to see how the vendor supports and certifies new versions of the underlying 
+  DBMS, and their treatment of patching (i.e certification of application against interim patches)	3 months prior to live	
+
+2	Clustering/HA Documentation	Where some form of High availability solution forms part of the design, a document is required to
+  detail how this should work 	1 month prior to live	
+
+3	Maintenance Requirements	Outside of standard housekeeping, are there any system specific requirements for defrags, reorgs etc. 
+(standard housekeeping refers to the documented standard for that DBMS)	1 month prior to live	
+
+4	Data Security Requirements	How will the data be secured - is the data encrypted, if so is it all the data, or a subset of the
+  data – what method of data encryption will be used.	3 months prior to live	
+
+5	Data Access Requirements	What database users and access permissions will be required e.g application user, troubleshoot user,
+individual users etc	3 months prior to live	
+
+6	Purge/Archive/Retrieval	To document what data, if any, is purged or archived and what the mechanisms are for the archiving.
+Where data is archived, detail of how this is to be recovered from archive. What method will be used for the purging/archiving 
+process.	3 months prior to live	
+
+7	Monitoring	Aside from standard monitoring, are there any specific processes/activities we should be alerting on. 	1 month
+prior to live	
+
+1.1.3.	Software Training Required
+#	Software	# to be trained	Period required pre live	SAC
+Ref
+1	(New) Software Training	3	As far in advance as possible	
+2	DBMS training (Oracle DB2, SQL etc) if a new version or feature is to be used	Min 3	As far in advance as possible	
+1.1.4.	Hardware Training Required
+#	Software	# to be trained	Period required pre live	SAC
+Ref
+1	None required other than included via 3.3.1			
+1.1.5.	Knowledge Transfer, Dry Runs, Walkthroughs, Pre OAT testing
+#	Requirement	# to be trained	Period required pre live	SAC
+Ref
+1	     Walkthrough of implementation	1	> 1 week	
+2	Dry run of Migration activities (if appropriate)	Min 2	> 1 week	
+3	Upgrade (Application & Database)	Min 2	> 3 weeks	
+4	Implementation/Backout dry run (if required)	Min 2	> 2 weeks	
+1.1.6.	System Overviews
+#	Requirement	# to be trained	Period required pre live	SAC
+Ref
+1	E2E Overview	Min 3	4 weeks	
+2	Database Overview from vendor	Min 2	Prior to build	
+1.1.7.	Support Area Processes/Standards Used (to be Complied with)
+#	Requirement	Standards Documentation Location	SAC
+Ref
+1	Database Build Standard		
+2	Housekeeping Standards		
+3	DR Standards		
+4	Monitoring Standards		
+5	Patching Policy		
+6	Security Policy		
+1.1.8.	Enduring Test Environments Required
+#	Environment	SAC
+Ref
+1	None specifically requested that is not covered in 3.3.1 that is not covered in 3.3.1	
+1.1.9.	Miscellaneous 
+None specifically requested that is not covered in 3.3.1 that is not covered in 3.3.1
