@@ -1,0 +1,2 @@
+oraenv='grep ^[A-Z] /etc/oratab|cut -d: -f1;.
+$ORACLE_HOME/bin/oraenv;. ~/.llh'
