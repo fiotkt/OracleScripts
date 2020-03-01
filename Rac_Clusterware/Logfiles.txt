@@ -1,0 +1,2 @@
+cd /u01/app/11.2.0/grid
+find . -name *log -type d -exec ls -ltr {} \; 2>/dev/null|more
