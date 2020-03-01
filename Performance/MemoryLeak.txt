@@ -1,0 +1,80 @@
+Prompt Q1 Use this view to determine which session the memory is increasing for i.e. increasing Max MB column
+COLUMN alme     HEADING "Allocated MB" FORMAT 99999D9
+COLUMN usme     HEADING "Used MB"      FORMAT 99999D9
+COLUMN frme     HEADING "Freeable MB"  FORMAT 99999D9
+COLUMN mame     HEADING "Max MB"       FORMAT 99999D9
+COLUMN username                        FORMAT a15
+COLUMN program                         FORMAT a22
+COLUMN sid                             FORMAT a5
+COLUMN spid                            FORMAT a8
+SET LINESIZE 300
+SELECT s.username, SUBSTR(s.sid,1,5) sid, p.spid, logon_time,
+       SUBSTR(s.program,1,22) program , s.process pid_remote,
+       s.status,
+       ROUND(pga_used_mem/1024/1024) usme,
+       ROUND(pga_alloc_mem/1024/1024) alme,
+       ROUND(pga_freeable_mem/1024/1024) frme,
+       ROUND(pga_max_mem/1024/1024) mame
+FROM  v$session s,v$process p
+WHERE p.addr=s.paddr
+ORDER BY pga_max_mem,logon_time;
+
+Prompt Q2 NB Run this a number of times so you can see where the memory is increasing, and then use the category that it is increasing into Q4 and Q5. Use the PID into Q3
+
+COLUMN category      HEADING "Category"
+COLUMN allocated     HEADING "Allocated bytes"
+COLUMN used          HEADING "Used bytes"
+COLUMN max_allocated HEADING "Max allocated bytes"
+SELECT pid, category, allocated, used, max_allocated
+FROM   v$process_memory
+WHERE  pid = (SELECT pid
+              FROM   v$process
+              WHERE  addr= (select paddr
+                            FROM   v$session
+                            WHERE  sid = &sid));
+							
+Prompt Q3 taking a snapshot of the memory to store in v$process_memory_detail using PID from Q2
+alter session set events 'immediate trace name PGA_DETAIL_GET level 60';
+
+Prompt Q4 creating table as a snapshot
+CREATE TABLE tab1 AS
+SELECT category, name, heap_name, bytes, allocation_count,
+       heap_descriptor, parent_heap_descriptor
+FROM   v$process_memory_detail
+WHERE  pid      = &pid
+--->Is Category Other correct??
+AND    category = 'SQL';
+
+Prompt Q5 Create another snapshot again to populate v$process_memory_detail using PID from Q2
+alter session set events'immediate trace name PGA_DETAIL_GET level &2';
+
+
+Prompt Q6 creating table 2 as a snapshot using PID from Q2
+CREATE TABLE tab2 AS
+SELECT category, name, heap_name, bytes, allocation_count,
+       heap_descriptor, parent_heap_descriptor
+FROM   v$process_memory_detail
+WHERE  pid      = &pid
+--->Is Category Other correct??
+AND    category = 'Other';
+
+
+Prompt Q7 Query the difference THE HEAP NAME IS THE IMPORTANT PART - Search for it in Oracle Support
+COLUMN category      HEADING "Category"
+COLUMN name          HEADING "Name"
+COLUMN heap_name     HEADING "Heap name"
+COLUMN q1            HEADING "Memory 1st"  Format 999,999,999,999
+COLUMN q2            HEADING "Memory 2nd"  Format 999,999,999,999
+COLUMN diff          HEADING "Difference"  Format S999,999,999,999
+SET LINES 150
+SELECT tab2.category, tab2.name, tab2.heap_name, tab1.bytes q1, tab2.bytes q2, tab2.bytes-tab1.bytes diff
+FROM   tab1, tab2
+WHERE  tab1.category  =  tab2.category
+AND    tab1.name      =  tab2.name
+AND    tab1.heap_name =  tab2.heap_name
+AND    tab1.bytes     <> tab2.bytes
+ORDER BY 6 DESC;
+
+
+
+ SELECT  COUNT (*) FROM "LRMDATA"."T_BLRETDOM_310314_CLT_TRL"@"OLOM" WHERE ("RL_AGG_FLAG"=:P0)
