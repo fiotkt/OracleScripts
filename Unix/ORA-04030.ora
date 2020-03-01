@@ -1,0 +1,62 @@
+/* ORA-4030 ERROR ON AIX
+THESE MUST BE SET, EVEN FOR ROOT (ESP IF USING GRID INFRASTRUCTURE), SEE METALINK NOTE 1599824.1
+
+root:
+    fsize = -1
+    cpu = -1
+    data = -1
+    stack = -1
+    core = -1
+    rss = -1
+    nofiles = -1
+    nproc = -1
+    nproc_hard = -1
+    cpu_hard = -1
+    fsize_hard = -1
+    data_hard = -1
+    stack_hard = -1
+    core_hard = -1
+    rss_hard = -1
+    nofiles_hard = -1
+    threads_hard = -1
+
+
+oracle:
+    fsize = -1
+    cpu = -1
+    data = -1
+    stack = -1
+    core = -1
+    rss = -1
+    nofiles = -1
+    nproc = -1
+    nproc_hard = -1
+    cpu_hard = -1
+    fsize_hard = -1
+    data_hard = -1
+    stack_hard = -1
+    core_hard = -1
+    rss_hard = -1
+    nofiles_hard = -1
+    threads_hard = -1
+
+grid:
+    fsize = -1
+    cpu = -1
+    data = -1
+    stack = -1
+    core = -1
+    rss = -1
+    nofiles = -1
+    nproc = -1
+    nproc_hard = -1
+    cpu_hard = -1
+    fsize_hard = -1
+    data_hard = -1
+    Stack_hard = -1
+    core_hard = -1
+    rss_hard = -1
+    nofiles_hard = -1
+    threads_hard = -1
+
+*/
