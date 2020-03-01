@@ -16,3 +16,6 @@ select inst_id, name, display_value
  where upper(name) like upper('%&1%') and name like '%\_&2' escape '\'
 order by name, inst_id
 /
+
+col display_value format a60
+select name, display_value from v$parameter2 where isdefault!='TRUE';
