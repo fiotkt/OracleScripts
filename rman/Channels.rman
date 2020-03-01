@@ -1,0 +1,8 @@
+run{
+allocate channel d1 type disk format '/u01/dd_channel1/OLSI/DB/db_%d_%I-%T-%s';
+allocate channel d2 type disk format '/u01/dd_channel1/OLSI/ARCH/al_%d_%I-%T-%s';
+backup filesperset=1 database channel d1;
+backup archivelog all delete input channel d2;
+release channel d1;
+release channel d2;
+}
