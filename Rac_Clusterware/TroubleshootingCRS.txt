@@ -1,0 +1,35 @@
+root@aplao101:root# /u01/app/11.2.0/grid/bin/crsctl stat res -t
+CRS-4535: Cannot communicate with Cluster Ready Services
+CRS-4000: Command Status failed, or completed with errors.
+root@aplao101:root# /u01/app/11.2.0/grid/bin/crsctl stat res -t -init
+--------------------------------------------------------------------------------
+NAME           TARGET  STATE        SERVER                   STATE_DETAILS
+--------------------------------------------------------------------------------
+Cluster Resources
+--------------------------------------------------------------------------------
+ora.asm
+      1        ONLINE  ONLINE       aplao101                 Started
+ora.cluster_interconnect.haip
+      1        ONLINE  ONLINE       aplao101
+ora.crf
+      1        ONLINE  ONLINE       aplao101
+ora.crsd
+      1        ONLINE  INTERMEDIATE aplao101
+ora.cssd
+      1        ONLINE  ONLINE       aplao101
+ora.cssdmonitor
+      1        ONLINE  ONLINE       aplao101
+ora.ctssd
+      1        ONLINE  ONLINE       aplao101                 OBSERVER
+ora.diskmon
+      1        OFFLINE OFFLINE
+ora.drivers.acfs
+      1        ONLINE  ONLINE       aplao101
+ora.evmd
+      1        ONLINE  INTERMEDIATE aplao101
+ora.gipcd
+      1        ONLINE  ONLINE       aplao101
+ora.gpnpd
+      1        ONLINE  ONLINE       aplao101
+ora.mdnsd
+      1        ONLINE  ONLINE       aplao101
