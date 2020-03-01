@@ -1,0 +1,107 @@
+1. Log into node 1 twice, node 2 and the standby database
+2. From node 1, ship archive logs fo today (archive log backups run at 2am in the morning)
+scp *20131103* apebo401:/u01/dd_channel1/PESB/ARCH
+
+3. At the same time, from node 2 ship archive logs from Sunday to the DR
+scp *20131104* apebo401:/u01/dd_channel1/PESB/ARCH
+
+4. From the second session on node one, backup up the current archivelogs
+
+run{
+allocate channel d2 type disk format '/u01/dd_channel1/PESB/ARCH/al_sev1_%d_%I-%T-%s';
+backup archivelog all delete input channel d2;
+release channel d2;
+}
+
+5. Scp down once backed up
+scp *20131105* apebo401:/u01/dd_channel1/PESB/ARCH
+
+6. From the standby, calculate logs required and restore
+
+ON DR
+SQL> select current_scn from v$database;
+
+CURRENT_SCN
+-----------
+   97224791
+
+On PRIMARY - Last applied logs on the standby
+SQL> select min(sequence#), thread# from v$archived_log where  FIRST_CHANGE#>97224791  group by thread# order by thread#;
+
+MIN(SEQUENCE#)    THREAD#
+-------------- ----------
+          3022          1
+          2908          2
+
+ON PRIMARY - last archive logs backed up
+SQL> select max(sequence#), thread# from v$archived_log where name is null group by thread# order by thread#;
+
+MAX(SEQUENCE#)    THREAD#
+-------------- ----------
+          3255          1
+          3143          2
+
+ON PRIMARY - Current logfiles applied to Primary
+SQL> select max(sequence#), thread# from v$archived_log group by thread# order by thread#;
+
+MAX(SEQUENCE#)    THREAD#
+-------------- ----------
+          3267          1
+          3155          2
+
+ON DR - Catalog archivelog backups
+
+rman target /
+catalog start with '/u01/dd_channel1/PESB/ARCH';
+
+run
+{allocate channel c1 type disk ;
+allocate channel c2 type disk ;
+allocate channel c3 type disk ;
+allocate channel c4 type disk ;
+set archivelog destination to '+FRA';
+restore archivelog from sequence 3022 until sequence 3255 thread 1;
+restore archivelog from sequence 2908 until sequence 3155 thread 2;
+}
+  
+USE THIS FOR TOMORROW
+alter database recover automatic from '+FRA' standby database;
+
+SQL> alter database recover automatic from '+FRA' standby database;
+
+Tail the alert log
+
+Once you get this error
+
+alter database recover automatic from '+FRA' standby database
+*
+ERROR at line 1:
+ORA-00279: change 82784954 generated at 11/06/2013 03:38:10 needed for thread 1
+ORA-00289: suggestion : +FRA
+ORA-00280: change 82784954 for thread 1 is in sequence #2736
+
+Then
+  
+7.  stop apply and restore DR database
+SQL>alter database recover managed standby database cancel;
+SQL>ALTER DATABASE RECOVER MANAGED STANDBY DATABASE using current logfile disconnect;
+
+Check MRP is running (have had a issue where needed to issue the command again)
+
+ps -ef|grep mrp
+
+8. Check when the database has been restored to
+
+On Standby
+SQL> select current_scn from v$database;
+
+CURRENT_SCN
+-----------
+   82947035
+   
+On Primary
+select scn_to_timestamp(82947035) from dual;
+
+SCN_TO_TIMESTAMP(82947035)
+---------------------------------------------------------------------------
+06-NOV-13 04.41.26.000000000
