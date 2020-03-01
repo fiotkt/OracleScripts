@@ -1,0 +1,3 @@
+perl -e 'use LWP::Simple; getprint($ARGV[0]);' http://us202al:7799
+admmo101:oracle:/home/oracle (DGP11) $ perl -e 'use LWP::Simple; getprint($ARGV[0]);' http://us202al:7799
+500 Can't connect to us202al:7799 (connect: A system call received a parameter that is not valid.) <URL:http://us202al:7799>
