@@ -1,0 +1,1 @@
+SYS.dbms_system.ksdwrt(2,'AUDIT: Purging Audit Trail until ' || last_archtime || ' beginning');
