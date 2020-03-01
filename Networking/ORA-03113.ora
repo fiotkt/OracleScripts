@@ -1,0 +1,3 @@
+NETWORKS ORA-03113 Error 
+Set SQLNET.EXPIRE_TIME=10 in the sqlnet.ora (of both oracle and grid)
+NB Does not need a restart of the database to effect
