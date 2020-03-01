@@ -1,0 +1,29 @@
+Lee Hallwood/contr/cfs: That dd command
+10:50:53 AM: Lee Hallwood/contr/cfs: dd if=/dev/<path>/<device> of=$HOME/test.1 bs=8192 count=1
+
+
+10:51:06 AM: Martin Cassidy/contr/cfs: The kfod command is giving the disks as busy
+10:51:26 AM: Martin Cassidy/contr/cfs: $ORACLE_HOME/bin/kfod status=TRUE asm_diskstring='/dev/rhdisk*' disk=all dscvgroup=TRUE verbose=true
+10:51:48 AM: Martin Cassidy/contr/cfs: KFOD-00311: Error scanning device /dev/rhdisk6
+ORA-27041: unable to open file
+IBM AIX RISC System/6000 Error: 16: Device busy
+Additional information: 42
+Additional information: 271736768
+Additional information: 368288
+KFOD-00311: Error scanning device /dev/rhdisk5
+ORA-27041: unable to open file
+IBM AIX RISC System/6000 Error: 16: Device busy
+Additional information: 42
+Additional information: 271736768
+Additional information: 368288
+KFOD-00311: Error scanning device /dev/rhdisk4
+ORA-27041: unable to open file
+IBM AIX RISC System/6000 Error: 16: Device busy
+Additional information: 42
+Additional information: 271736768
+Additional information: 368288
+KFOD-00311: Error scanning device /dev/rhdisk3
+ORA-27041: unable to open file
+IBM AIX RISC System/6000 Error: 16: Device busy
+10:51:54 AM: Martin Cassidy/contr/cfs: Disk issue imho
+11:05:32 AM: Lee Hallwood/contr/cfs: good work fella, forgot about kindy find oracle disks
