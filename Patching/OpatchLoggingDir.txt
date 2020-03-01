@@ -1,0 +1,1 @@
+opatch log directory $ORACLE_HOME/cfgtoollogs/opatch
