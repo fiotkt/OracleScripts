@@ -1,0 +1,77 @@
+RebuildingDR
+1. Copy files over
+scp *20140218* oracle@asebo401:/u01/dd_channel1/SESB/DB
+
+Or, if the files names do not include the date they where created
+
+scp `find /u01/dd_channel1/SESB/DB/* -mtime -1 -print` oracle@asebo401:/u01/dd_channel1/SESB/DB
+
+2. Create a Standby Control file
+
+run 
+{ 
+allocate channel c1 type disk format '/u01/dd_channel1/SESB/DB/stbycontrolfile_19022014.crt'; 
+backup current controlfile for standby; 
+} 
+
+scp /u01/dd_channel1/SESB/DB/stbycontrolfile_19022014.crt oracle@asebo401:/u01/dd_channel1/SESB/DB
+
+3. Switch the logfiles
+alert system archive log current;
+/
+/
+
+3. On standby Delete old files
+ select 'rm '||name from v$datafile_header;
+ 
++DATA/sesbs/datafile/system.271.829065169
++DATA/sesbs/datafile/sysaux.272.829065101
++DATA/sesbs/datafile/undotbs1.289.829065057
++DATA/sesbs/datafile/users.291.829065743
++DATA/sesbs/datafile/undotbs2.256.829065731
++DATA/sesbs/datafile/auditdata_encrypted.261.829065013
++DATA/sesbs/datafile/test.294.829065769
++DATA/sesbs/datafile/encrypted_assetdata.292.829065767
++DATA/sesbs/datafile/encrypted_auditdata.293.829065767
++DATA/sesbs/datafile/assetdata_encrypted.290.829065741
++DATA/sesbs/datafile/message_audit_encrypt1.288.829065017
++DATA/sesbs/datafile/message_audit_encrypt1.262.829065009
++DATA/sesbs/datafile/message_audit_encrypt2.270.829065173
++DATA/sesbs/datafile/message_audit_encrypt3.265.829065029
++DATA/sesbs/datafile/part_seq_idx1.269.829065349
++DATA/sesbs/datafile/part_seq_idx2.268.829065505
++DATA/sesbs/datafile/part_seq_idx3.259.829065581
++DATA/sesbs/datafile/part_seq_idx4.258.829065647
++DATA/sesbs/datafile/message_audit_encrypt1.278.829065019
++DATA/sesbs/datafile/message_audit_encrypt1.264.829065023
++DATA/sesbs/datafile/message_audit_encrypt1.280.829065027
++DATA/sesbs/datafile/auditdata_encrypted.279.829065029
++DATA/sesbs/datafile/dbaudit.257.829065653
+
+shutdown immediate;
+
+asmcmd (copy and paste rm commands above)
+
+
+4. Startup nomount the standby
+startup nomount;
+
+
+
+5. Restore the database
+rman target / auxiliiary sys/<password>@dg_<SID>
+run
+{
+allocate auxiliary channel C1 device type disk; 
+allocate auxiliary channel C2 device type disk; 
+allocate auxiliary channel C3 device type disk; 
+allocate auxiliary channel C4 device type disk; 
+duplicate target database for standby; 
+}
+
+6. Once complete run this
+alter database recover managed standby database using current logfile disconnect;
+
+or you could run this
+
+sql>recover managed standby database;
