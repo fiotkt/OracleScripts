@@ -1,0 +1,8 @@
+The user cert is not bound to any server
+The client asks for a cert
+The DB server sends the user cert (contains public key)
+The client asks, how do I know I can trust this cert
+
+It knows it can trust the cert because it has been generated using the root and sub cert. The client had previously imported these as trusted certs and the only way that cert would be generated is by that particular root and sub cert
+
+The reason we have different certs on different nodes is so we can stagger the expiry time and also if a cert was revoked not the whole cluster would go down, just the node that the cert was revoked for
