@@ -1,0 +1,25 @@
+From the database server
+Check listening on port 3874 (MUST HAVE THE AGENT INSTALLED FOR THIS)
+netstat -Aan |grep 3874
+
+f1000e00008a4bb8 tcp        0      0  *.3874                *.*                   LISTEN
+
+rmsock f1000e00008a4bb8 tcpcb
+The socket 0xf1000e00008a4808 is being held by proccess 13697122 (java).
+
+upi702@admmo101:/home/upi702 : ps -ef |grep 13697122
+  oracle 13697122 11272312   0   07 Feb      -  8:27 /u01/app/oracle/product/agent12c/core/12.1.0.1.0/jdk/bin/java -Xmx128M -server -Djava.security.egd=file:///dev/./urandom -Dsun.lang.ClassLoader.allowArraySyntax=true -XX:+UseConcMarkSweepGC -XX:+UseCompressedOops -Dwatchdog.pid=11272312 -cp /u01/app/oracle/product/agent12c/core/12.1.0.1.0/jdbc/lib/ojdbc5.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/ucp/lib/ucp.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/modules/oracle.http_client_11.1.1.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/lib/xmlparserv2.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/lib/jsch.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/lib/optic.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/modules/oracle.dms_11.1.1/dms.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/modules/oracle.odl_11.1.1/ojdl.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/modules/oracle.odl_11.1.1/ojdl2.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/sysman/jlib/log4j-core.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/jlib/gcagent_core.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/sysman/jlib/emagentSDK-intg.jar:/u01/app/oracle/product/agent12c/core/12.1.0.1.0/sysman/jlib/emagentSDK.jar oracle.sysman.gcagent.tmmain.TMMain
+
+
+Telnet to the ADMIN port (should be admin for Agents)
+upi702@admmo101:telnet 10.174.185.78 3874
+
+From us202al
+
+sudo su - oracle (Remember password with captial first letter)
+perl port_test.pl <ADMIN ADDRESS> 3874
+
+If it says
+10.174.185.78 is NOT listening on tcp port 3874.
+
+Then this could be a firewall issue
