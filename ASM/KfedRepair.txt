@@ -1,0 +1,319 @@
+Forwarding... 
+
+10:13:24 AM :: Lee Hallwood joined the chat. :: 
+10:13:25 AM :: Rob Marsh joined the chat. :: 
+10:13:34 AM :: John Flynn joined the chat. :: 
+10:13:39 AM Lee Hallwood/contr/cfs - morning   
+10:13:47 AM Rob Marsh/opsrv/ict/cfs - morning  
+10:14:10 AM Lee Hallwood/contr/cfs - ok, so we can see this these disks look different from an oracle perspective  
+10:14:16 AM Lee Hallwood/contr/cfs - 
+1* select path, header_status from v$asm_disk
+SQL> /
+
+PATH HEADER_STATU
+-------------------- ------------
+/dev/rhdisk10 MEMBER
+/dev/rhdisk11 MEMBER
+/dev/rhdisk12 MEMBER
+/dev/rhdisk9 MEMBER
+/dev/rhdisk5 CANDIDATE
+/dev/rhdisk6 CANDIDATE
+/dev/rhdisk7 CANDIDATE
+/dev/rhdisk4 CANDIDATE  
+10:14:40 AM Lee Hallwood/contr/cfs - so I take it Rob you've looked at these and can find no difference?  
+10:14:56 AM Rob Marsh/opsrv/ict/cfs - one mo let me show you  
+10:14:59 AM Lee Hallwood/contr/cfs - k  
+10:15:37 AM Rob Marsh/opsrv/ict/cfs - one mo mate someone on phone  
+10:16:47 AM Lee Hallwood/contr/cfs - k  
+10:17:27 AM Rob Marsh/opsrv/ict/cfs - ang elliot change person  
+10:18:20 AM Lee Hallwood/contr/cfs - great  
+10:20:38 AM Rob Marsh/opsrv/ict/cfs - crw------- 2 root system 17, 0 17 Oct 2011 rhdisk0
+crw------- 1 root system 17, 1 17 Oct 2011 rhdisk1
+crw-rw---- 1 oragrdpr dba 17, 10 29 Mar 10:44 rhdisk10
+crw-rw---- 1 oragrdpr dba 17, 11 29 Mar 10:44 rhdisk11
+crw-rw---- 1 oragrdpr dba 17, 12 29 Mar 10:44 rhdisk12
+crw------- 1 root system 17, 2 18 Feb 2012 rhdisk2
+crw------- 1 root system 17, 3 18 Feb 2012 rhdisk3
+crw-rw---- 1 oragrdpr dba 17, 4 18 Feb 2012 rhdisk4
+crw-rw---- 1 oragrdpr dba 17, 5 18 Feb 2012 rhdisk5
+crw-rw---- 1 oragrdpr dba 17, 6 18 Feb 2012 rhdisk6
+crw-rw---- 1 oragrdpr dba 17, 7 18 Feb 2012 rhdisk7
+crw------- 1 root system 17, 8 18 Mar 10:13 rhdisk8
+crw-rw---- 1 oragrdpr dba 17, 9 29 Mar 10:44 rhdisk9
+  
+10:21:08 AM Rob Marsh/opsrv/ict/cfs - so as u can see the 4 disks are the same as from 2012  
+10:21:40 AM Lee Hallwood/contr/cfs - ok, so the change last night, has that been backed out now?  
+10:22:03 AM Rob Marsh/opsrv/ict/cfs - 9 10 11 and 12 were added in the same fashion for the safewatch upgrade  
+10:22:15 AM Rob Marsh/opsrv/ict/cfs - yes we are back to as we was b4 we started  
+10:22:43 AM Lee Hallwood/contr/cfs - ok, so could anything have corrupted the disks??  
+10:24:10 AM John Flynn/opsrv/ict/cfs - This is on metalink:  
+10:24:12 AM John Flynn/opsrv/ict/cfs - This issue could be caused by the "RESERVE POLICY" settings on the hdisks which are used for ASM.
+If the disks are not visible as shared disks (means if 'reserve_lock=yes') this can cause problems
+with mounting the disks.
+
+If you change the multipathing driver for existing ASM disks the ODM template in AIX will
+use the default "RESERVE POLICY" for the asm disks again, which is 'reserve_lock=yes'.
+
+On the other side by changing the disk attribute reserve_lock to 'no' to an existing ASM disk may 
+corrupt the ASM disk header rendering the ASM disk unusable.  
+10:26:42 AM Rob Marsh/opsrv/ict/cfs - reserve_policy no_reserve Reserve Policy True
+  
+10:28:48 AM Lee Hallwood/contr/cfs - john, rob may have spotted something, give him 10 mins  
+10:28:59 AM John Flynn/opsrv/ict/cfs - ok  
+10:32:54 AM Lee Hallwood/contr/cfs - just nipping the shops, be back in 15  
+10:33:01 AM Rob Marsh/opsrv/ict/cfs - k  
+10:33:22 AM Rob Marsh/opsrv/ict/cfs - john will be handing over in a mo  
+10:33:55 AM John Flynn/opsrv/ict/cfs -   
+10:37:54 AM Rob Marsh/opsrv/ict/cfs - hi john can you stop and restart please  
+10:38:21 AM John Flynn/opsrv/ict/cfs - ok  
+10:41:12 AM John Flynn/opsrv/ict/cfs - I've restarted asm doesn't look any different, I'll try shutting it all down & restarting again  
+10:41:34 AM Rob Marsh/opsrv/ict/cfs - root@swiftdb20:root> lsattr -El hdisk4 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk5 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk6 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk7 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk9 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk10 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk11 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk12 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+  
+10:41:44 AM Rob Marsh/opsrv/ict/cfs - yep complete shutdown  
+10:45:32 AM John Flynn/opsrv/ict/cfs - I've shut everything down i think  
+10:45:48 AM John Flynn/opsrv/ict/cfs - no response from the box though atm  
+10:46:44 AM Rob Marsh/opsrv/ict/cfs - ??  
+10:47:13 AM John Flynn/opsrv/ict/cfs - I'm entering the commands but they aren't appearing on the commandline until minutes later  
+10:47:20 AM John Flynn/opsrv/ict/cfs -   
+10:47:25 AM John Flynn/opsrv/ict/cfs - network  
+10:47:48 AM Rob Marsh/opsrv/ict/cfs - ah ok  
+10:52:30 AM Lee Hallwood/contr/cfs - john, worth restarting has??  
+10:52:57 AM Rob Marsh/opsrv/ict/cfs - lee we are doing a clean shutdown / restart of server  
+10:53:03 AM Lee Hallwood/contr/cfs - ok, cool  
+10:59:20 AM Rob Marsh/opsrv/ict/cfs - ok back up now - before we start - let me confirm the sdcsi reserves  
+11:00:39 AM Rob Marsh/opsrv/ict/cfs - root@swiftdb20:root> lsattr -El hdisk4 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk5 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk6 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk7 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk9 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk10 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk11 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+root@swiftdb20:root> lsattr -El hdisk12 |grep reserve
+reserve_policy no_reserve Reserve Policy True
+  
+11:00:50 AM Rob Marsh/opsrv/ict/cfs - ok all asm disks have no reserve  
+11:00:57 AM Rob Marsh/opsrv/ict/cfs - try startup now  
+11:01:00 AM John Flynn/opsrv/ict/cfs - ok  
+11:03:30 AM Rob Marsh/opsrv/ict/cfs - does the asm header status confirm ?  
+11:03:34 AM John Flynn/opsrv/ict/cfs - still the same  
+11:03:57 AM Rob Marsh/opsrv/ict/cfs - what does the asm header status confirm ?   
+11:05:37 AM Lee Hallwood/contr/cfs - ASM : select path, header_status from v$asm_disk;
+
+PATH HEADER_STATU
+-------------------- ------------
+/dev/rhdisk10 MEMBER
+/dev/rhdisk11 MEMBER
+/dev/rhdisk12 MEMBER
+/dev/rhdisk9 MEMBER
+/dev/rhdisk5 CANDIDATE
+/dev/rhdisk6 CANDIDATE
+/dev/rhdisk7 CANDIDATE
+/dev/rhdisk4 CANDIDATE
+  
+11:06:21 AM Rob Marsh/opsrv/ict/cfs - let me check perms  
+11:07:14 AM Rob Marsh/opsrv/ict/cfs - crw------- 2 root system 17, 0 17 Oct 2011 rhdisk0
+crw------- 1 root system 17, 1 17 Oct 2011 rhdisk1
+crw-rw---- 1 oragrdpr dba 17, 10 29 Mar 10:44 rhdisk10
+crw-rw---- 1 oragrdpr dba 17, 11 29 Mar 10:44 rhdisk11
+crw-rw---- 1 oragrdpr dba 17, 12 29 Mar 10:44 rhdisk12
+crw------- 1 root system 17, 2 18 Feb 2012 rhdisk2
+crw------- 1 root system 17, 3 18 Feb 2012 rhdisk3
+crw-rw---- 1 oragrdpr dba 17, 4 18 Feb 2012 rhdisk4
+crw-rw---- 1 oragrdpr dba 17, 5 18 Feb 2012 rhdisk5
+crw-rw---- 1 oragrdpr dba 17, 6 18 Feb 2012 rhdisk6
+crw-rw---- 1 oragrdpr dba 17, 7 18 Feb 2012 rhdisk7
+crw------- 1 root system 17, 8 18 Mar 10:13 rhdisk8
+crw-rw---- 1 oragrdpr dba 17, 9 29 Mar 10:44 rhdisk9
+  
+11:09:02 AM Rob Marsh/opsrv/ict/cfs - do u think having PVIDs on may affect - havin said that its not affected the others  
+11:09:36 AM Lee Hallwood/contr/cfs - yeah, we shouldn't/don't require PVID on asm disks, worth trying  
+11:10:20 AM Rob Marsh/opsrv/ict/cfs - well the pvids are on at the back end VIO level  
+11:10:57 AM Lee Hallwood/contr/cfs - ok, they're not on the box are they  
+11:11:16 AM Rob Marsh/opsrv/ict/cfs - no - i removed em  
+11:11:44 AM Lee Hallwood/contr/cfs - ok, and for live we have PVIDs on the VIO level?  
+11:11:53 AM Rob Marsh/opsrv/ict/cfs - let me chk  
+11:13:37 AM Rob Marsh/opsrv/ict/cfs - yea we have pvids on the VIO backind devs as they are part of a VG and we pass up LV slices  
+11:14:14 AM Rob Marsh/opsrv/ict/cfs - at the client end there is no pvids  
+11:14:22 AM Rob Marsh/opsrv/ict/cfs - so prod and dr the same  
+11:14:50 AM Lee Hallwood/contr/cfs - ok, so probably not that  
+11:15:02 AM Lee Hallwood/contr/cfs - ok, probably have two choices here  
+11:15:21 AM Lee Hallwood/contr/cfs - Raise a sev 1 SR with Oracle and get them involved   
+11:15:29 AM Lee Hallwood/contr/cfs - or  
+11:16:04 AM Lee Hallwood/contr/cfs - try that fix that you come across john, if that doesn't fix dd the disks and try to create the diskgroups - if that works rebuild DR  
+11:16:39 AM John Flynn/opsrv/ict/cfs - ok may as well have a go with the disk repair utility then  
+11:16:52 AM Lee Hallwood/contr/cfs - ok  
+11:16:54 AM Rob Marsh/opsrv/ict/cfs - sounds like a good first option  
+11:17:22 AM John Flynn/opsrv/ict/cfs - may as well shut down asm then first  
+11:18:25 AM Rob Marsh/opsrv/ict/cfs - just let me completely confirm that there are no reserves  
+11:18:37 AM Lee Hallwood/contr/cfs - k  
+11:19:41 AM Lee Hallwood/contr/cfs - rob, are we on one of these disks  
+11:19:43 AM Lee Hallwood/contr/cfs - SS, EMC, HDS, CLARiiON, or MPIO-capable disks reserve_policy no_reserve
+
+  
+11:19:58 AM Rob Marsh/opsrv/ict/cfs - MPIO-capable disks reserve_policy no_reserve  
+11:20:49 AM Lee Hallwood/contr/cfs - cool  
+11:21:26 AM John Flynn/opsrv/ict/cfs - are we ready to have a go with this then:  
+11:21:27 AM John Flynn/opsrv/ict/cfs - kfed repair /dev/rhdisk4  
+11:21:39 AM Rob Marsh/opsrv/ict/cfs - OK can confirm all ASM disks that are presented at the cbackend VIO level have no reserve on botyh VIOs  
+11:21:51 AM Rob Marsh/opsrv/ict/cfs - and this reflects at the client end as well  
+11:22:13 AM Lee Hallwood/contr/cfs - ok, cool.   
+11:22:35 AM Lee Hallwood/contr/cfs - not sure John, do you think worth raising with oracle first  
+11:22:47 AM Lee Hallwood/contr/cfs - or do we think we've got nothing to lose trying this  
+11:23:21 AM John Flynn/opsrv/ict/cfs - it's a last resort  
+11:23:42 AM Rob Marsh/opsrv/ict/cfs - just lookin at the googled thread for that cmd  
+11:24:19 AM Rob Marsh/opsrv/ict/cfs - Oracle ASM Patchset 11.1.0.7 has a feature where it stores a backup of the header block. This is how you restore it:
+
+- Checked for damage to ASM metadata:
+1. kfed read /dev/ora_asm_disk_4 - showed the disk header zeroed out...
+2. kfed read /dev/ora_asm_disk_4 blkn=1 - free space table intact, this is good...
+3. kfed read /dev/ora_asm_disk_4 (few other blocks in AU0) - allocation table blocks,
+all fine...
+4. kfed read /dev/ora_asm_disk_4 aun=1 blkn=255 - this is where we keep the disk header copy, and it was there...
+
+- The above meant that only disk header was damaged and that we should be able to repair that...
+
+- Dismounted disk group DBGRP1 on node 1...
+
+- Took backup of the first 2 MB of disk ora_asm_disk_4:
+
+dd if=/dev/ora_asm_disk_4 bs=1024l cont=2 of=/oracle/ora_asm_disk_4.dd
+
+- Repaired the disk header:
+
+kfed repair/dev/ora_asm_disk_4
+
+- After this we were able to mount disk group DBGRP1 on both nodes...
+
+- And open the database intances in both nodes...
+
+Without that patchset, don't think about it  
+11:25:51 AM John Flynn/opsrv/ict/cfs - oragrdpr@swiftdb20:trace> kfed read /dev/rhdisk4
+kfbh.endian: 201 ; 0x000: 0xc9
+kfbh.hard: 194 ; 0x001: 0xc2
+kfbh.type: 212 ; 0x002: *** Unknown Enum ***
+kfbh.datfmt: 193 ; 0x003: 0xc1
+kfbh.block.blk: 0 ; 0x004: T=0 NUMB=0x0
+kfbh.block.obj: 0 ; 0x008: TYPE=0x0 NUMB=0x0
+kfbh.check: 0 ; 0x00c: 0x00000000
+kfbh.fcn.base: 0 ; 0x010: 0x00000000
+kfbh.fcn.wrap: 0 ; 0x014: 0x00000000
+kfbh.spare1: 0 ; 0x018: 0x00000000
+kfbh.spare2: 0 ; 0x01c: 0x00000000
+1105FA200 C9C2D4C1 00000000 00000000 00000000 [................]
+1105FA210 00000000 00000000 00000000 00000000 [................]
+Repeat 30 times
+1105FA400 01040108 0000B51E 00000000 00000002 [................]
+1105FA410 80000000 0000B51D 00000000 00180002 [................]
+1105FA420 001C0042 0300F99F 01900050 00080000 [...B.......P....]
+1105FA430 00000000 FFFFFFFF FFFFFFFF 00000000 [................]
+1105FA440 00000002 80000001 0000B51D 00000000 [................]
+1105FA450 00180002 001C0041 0300F99F 00D8000C [.......A........]
+1105FA460 000C0001 00000000 00000003 00000029 [...............)]
+1105FA470 00800000 00000000 00000008 0000B51D [................]
+1105FA480 00000000 00380000 001C01E1 1A11F99F [.....8..........]
+1105FA490 00000000 00000000 00000000 000002CE [................]
+1105FA4A0 00000000 00000000 00000000 00010000 [................]
+1105FA4B0 00000000 00000000 00000015 00000000 [................]
+1105FA4C0 00000000 00000000 00000032 00000000 [...........2....]
+1105FA4D0 00000003 00000001 0000B51D 00000000 [................]
+1105FA4E0 00140003 001C0085 0411F99F 0000002A [...............*]
+1105FA4F0 002A0029 00010000 00000016 0001003D [.*.)...........=]
+1105FA500 00000002 00000000 00140003 001C0085 [................]
+1105FA510 0411F99F 0000002A 002A001F 00010000 [.......*.*......]
+1105FA520 00000011 0001003A 00000002 00000000 [.......:........]
+1105FA530 00000000 00000000 00000000 00000000 [................]
+Repeat 204 times
+KFED-00322: Invalid content encountered during block traversal: [kfbtTraverseBlock][Invalid OSM block type][][212]
+  
+11:25:56 AM Lee Hallwood/contr/cfs - I'd be much happier raising a sev 1 with oracle  
+11:26:13 AM Rob Marsh/opsrv/ict/cfs -   
+11:26:54 AM Rob Marsh/opsrv/ict/cfs - devils advocate here .. how long would it take to rebuild this ?  
+11:26:55 AM John Flynn/opsrv/ict/cfs - they may well suggest running that repair, at least it would be under guidance  
+11:27:06 AM Lee Hallwood/contr/cfs - ok, go for it  
+11:27:18 AM Rob Marsh/opsrv/ict/cfs - nice one centurion  
+11:28:07 AM John Flynn/opsrv/ict/cfs - ok are we gonna try this repair then?  
+11:28:47 AM Lee Hallwood/contr/cfs - aye  
+11:29:02 AM John Flynn/opsrv/ict/cfs - ok then here we go...  
+11:29:21 AM Rob Marsh/opsrv/ict/cfs -   
+11:29:31 AM Rob Marsh/opsrv/ict/cfs - fingers x`d  
+11:29:33 AM Lee Hallwood/contr/cfs -   
+11:30:24 AM John Flynn/opsrv/ict/cfs - restarting has now, repairs done on all 4 disks  
+11:30:41 AM Rob Marsh/opsrv/ict/cfs - that was quick  
+11:30:56 AM Rob Marsh/opsrv/ict/cfs - when we do fsck its takes ages  
+11:31:33 AM John Flynn/opsrv/ict/cfs - yeh!! I think it has a copy of the disk header further down the disk so just copies that back  
+11:32:30 AM Rob Marsh/opsrv/ict/cfs - same ?  
+11:32:32 AM John Flynn/opsrv/ict/cfs - looks like it has worked  
+11:32:37 AM Rob Marsh/opsrv/ict/cfs - wow  
+11:32:38 AM Lee Hallwood/contr/cfs - f me  
+11:32:51 AM Rob Marsh/opsrv/ict/cfs -   
+11:33:00 AM Lee Hallwood/contr/cfs - boom  
+11:33:01 AM Lee Hallwood/contr/cfs - ASM : select path, header_status from v$asm_disk;
+
+PATH HEADER_STATU
+-------------------- ------------
+/dev/rhdisk10 MEMBER
+/dev/rhdisk11 MEMBER
+/dev/rhdisk12 MEMBER
+/dev/rhdisk4 MEMBER
+/dev/rhdisk5 MEMBER
+/dev/rhdisk6 MEMBER
+/dev/rhdisk7 MEMBER
+/dev/rhdisk9 MEMBER
+
+  
+11:33:12 AM Rob Marsh/opsrv/ict/cfs - your a smooth criminal mr flynn  
+11:33:13 AM John Flynn/opsrv/ict/cfs - starting the database now  
+11:33:20 AM Rob Marsh/opsrv/ict/cfs - bingo !!!  
+11:33:37 AM Lee Hallwood/contr/cfs - give that man a cigar  
+11:33:39 AM Rob Marsh/opsrv/ict/cfs - ill nominate u 2 for a STAR award  
+11:33:57 AM Lee Hallwood/contr/cfs - All john's work Rob, can't take credit for this one  
+11:34:00 AM John Flynn/opsrv/ict/cfs - I can hang it next to my disciplinary letter  
+11:34:06 AM Lee Hallwood/contr/cfs - IMAGE [laugh]  
+11:34:11 AM Rob Marsh/opsrv/ict/cfs - FEKKIN QUALITY
+  
+11:34:17 AM Rob Marsh/opsrv/ict/cfs - and mine as well  
+11:34:29 AM Rob Marsh/opsrv/ict/cfs -   
+11:34:45 AM Lee Hallwood/contr/cfs - excellent work John  
+11:34:45 AM Rob Marsh/opsrv/ict/cfs - ther u go mate - thers ur reward  
+11:35:34 AM John Flynn/opsrv/ict/cfs - replication is working now  
+11:35:42 AM Lee Hallwood/contr/cfs - sweet, so ok for us to enjoy the rest of the bank holiday weekend?  
+11:35:44 AM Rob Marsh/opsrv/ict/cfs - and its a good solution for me as I see pvids at the back end which makes lun identification per lpar so much easier  
+11:36:06 AM Rob Marsh/opsrv/ict/cfs - top bommin gents - thats a result - ill issue the comms  
+11:36:11 AM Rob Marsh/opsrv/ict/cfs - cheers guys  
+11:36:15 AM John Flynn/opsrv/ict/cfs - cheers  
+11:36:25 AM Lee Hallwood/contr/cfs - cool see you later guys, well done John, top man  
+11:36:38 AM Rob Marsh/opsrv/ict/cfs - ttfn come on you blue boys  
+11:36:51 AM John Flynn/opsrv/ict/cfs - city?  
+11:36:58 AM Lee Hallwood/contr/cfs - yes, that WOULD make my day  
+11:36:59 AM John Flynn/opsrv/ict/cfs -   
+11:37:00 AM Rob Marsh/opsrv/ict/cfs - everton mate !!!  
+11:37:10 AM Rob Marsh/opsrv/ict/cfs - life long blue me  
+11:37:14 AM Lee Hallwood/contr/cfs -   
+11:37:22 AM Lee Hallwood/contr/cfs - me too, for today  
+11:37:33 AM John Flynn/opsrv/ict/cfs - sky blue  
+11:37:59 AM Lee Hallwood/contr/cfs - bitter blue  
+11:38:38 AM Lee Hallwood/contr/cfs - right, see you later guys  
+
+ 
