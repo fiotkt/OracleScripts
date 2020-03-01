@@ -1,0 +1,5 @@
+select OS_USERNAME,USERNAME,USERHOST,to_char(timestamp,'MM-DD-YYYY HH24:MI:SS') as timestamp, 
+returncode 
+from dba_audit_trail  
+where returncode = '1017'
+and timestamp > sysdate-1 order by timestamp desc
