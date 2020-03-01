@@ -1,0 +1,1 @@
+scp `find /u01/dd_channel1/SESB/DB/* -mtime -1 -print` oracle@asebo401:/u01/dd_channel1/SESB/DB
