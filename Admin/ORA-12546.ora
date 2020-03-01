@@ -1,0 +1,41 @@
+All,
+Ok, managed to get to the bottom of this
+
+It's the file permissions on the $ORACLE_BASE/product directory
+
+TEST
+swiftdb30:oraswdv:/u01/app/oraswdv (STBUTF8) $ ls -ltrd $ORACLE_BASE/product
+drwxr-xr-x    5 oraswdv  oinstall        256 16 Jan 14:13 /u01/app/oraswdv/product
+
+PRODFIX
+oraswdv@swiftdb40:/u01/app/oraswdv : ls -ltrd $ORACLE_BASE/product
+drwxr-xr-x    4 oraswdv  oinstall        256 17 Jan 08:45 /u01/app/oraswdv/product
+
+PROD
+swiftdb10:oraswpr:/u01/app/oraswpr (STBPRD) $ ls -ltrd $ORACLE_BASE/product
+drwxrwx---    7 oraswpr  oinstall        256 27 Feb 17:31 /u01/app/oraswpr/product
+
+When I set Prod Fix to how it is in Live I get the exact same error when trying to login through the root user (which HP Monitoring does) (It was working previous to changing these settings to how it is in live)
+
+PRODFIX
+ls -ltrd /u01/app/oraswdv/product/
+drwxr-x---    4 oraswdv  oinstall        256 17 Jan 08:45 /u01/app/oraswdv/product/
+
+Attempt to loging
+
+sqlplus sys as sysdba
+
+SQL*Plus: Release 11.2.0.2.0 Production on Thu Mar 13 10:54:22 2014
+
+Copyright (c) 1982, 2010, Oracle.  All rights reserved.
+
+Enter password:
+ERROR:
+ORA-12546: TNS:permission denied
+
+Therefore, the fix is to set the permissions on the $ORACLE_BASE/product directory to drwxr-xr-x 
+
+It's probably to late to test this before go live with the incidents and change freeze, suggest we change on the migration weekend and test
+
+Cheers
+Lee
