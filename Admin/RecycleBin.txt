@@ -1,0 +1,2 @@
+purge recyclebin - purge objects belonging to you
+purge dba_recyclebin; purge everything in the recyclebin
