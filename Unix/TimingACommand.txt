@@ -1,0 +1,2 @@
+time  ls -ltr |wc -l;date 
+Time a unix response time
