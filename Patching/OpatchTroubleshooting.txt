@@ -1,0 +1,4 @@
+
+export OPATCH_DEBUG=TRUE
+opatch lsinventory
+export OPATCH_DEBUG=
