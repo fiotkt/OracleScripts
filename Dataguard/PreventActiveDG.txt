@@ -1,0 +1,1 @@
+Prevent active dataguard alter system set "_query_on_physical" =false scope=spfile; 
