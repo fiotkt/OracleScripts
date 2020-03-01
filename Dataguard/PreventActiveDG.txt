@@ -1,1 +1,3 @@
 Prevent active dataguard alter system set "_query_on_physical" =false scope=spfile; 
+
+http://uhesse.com/2013/10/01/parameter-to-prevent-license-violation-with-active-data-guard/
