@@ -1,0 +1,1 @@
+Rman command list backupset of archivelog until time 'sysdate -21';
