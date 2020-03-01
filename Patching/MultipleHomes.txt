@@ -1,0 +1,2 @@
+If multiple Oracle home environments then check that inventory_loc in /etc/oraInst.loc is pointing to the right 
+ORACLE_HOME when adding/deleting software
