@@ -1,0 +1,2 @@
+Remove backups that won;t respond to delete obsolete or delete expired
+delete backupset 5001,4998,4997,4996,4995,4994,4993,4992,4991,4990,4989,4988;
