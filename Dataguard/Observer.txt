@@ -1,0 +1,2 @@
+no hupping the oracle observer 
+$ nohup dgmgrl -silent -logfile /u01/app/oracle/diag/observer/observer.log sys/pa55w0rd@DG_PESB "start observer" &
