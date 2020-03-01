@@ -1,0 +1,7 @@
+#!/usr/bin/ksh
+c=1
+while [[ $c -le 100000 ]]
+do
+  sqlplus / as sysdba @gendata.sql
+   let c=c+1
+done
