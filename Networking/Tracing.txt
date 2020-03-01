@@ -1,0 +1,9 @@
+TRACE_LEVEL_CLIENT=16 
+TRACE_DIRECTORY_CLIENT=<location of trace directory> 
+TRACE_UNIQUE_CLIENT=on 
+TRACE_FILE_CLIENT=ssl_client 
+TRACE_LEVEL_SERVER=16 
+TRACE_DIRECTORY_SERVER=<location of trace directory> 
+TRACE_FILE_SERVER=ssl_srvr 
+#For 11g client and server: 
+DIAG_ADR_ENABLED=OFF
