@@ -1,0 +1,90 @@
+Ever faced this?
+
+crs_stat -t
+CRS-0184: Cannot communicate with the CRS daemon.
+
+Of course you have.
+
+Well start it with this:
+
+crsctl start resource ora.crsd –init
+
+
+Thanks to Ian Bacon whose Googlefu is stronger than yours
+
+
+Check it with this:
+
+*Broken*
+crsctl status resource -t -init
+--------------------------------------------------------------------------------
+Name           Target  State        Server                   State details
+--------------------------------------------------------------------------------
+Cluster Resources
+--------------------------------------------------------------------------------
+ora.asm
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.cluster_interconnect.haip
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.crf
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.crsd
+      1        ONLINE  OFFLINE                               STABLE
+ora.cssd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.cssdmonitor
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.ctssd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              OBSERVER,STABLE
+ora.diskmon
+      1        OFFLINE OFFLINE                               STABLE
+ora.drivers.acfs
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.evmd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.gipcd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.gpnpd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.mdnsd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.storage
+      1        ONLINE  OFFLINE                               STABLE
+-------------------------------------------------------------------------------
+
+*Fixed*
+crsctl status resource -t -init
+--------------------------------------------------------------------------------
+Name           Target  State        Server                   State details
+--------------------------------------------------------------------------------
+Cluster Resources
+--------------------------------------------------------------------------------
+ora.asm
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.cluster_interconnect.haip
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.crf
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.crsd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.cssd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.cssdmonitor
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.ctssd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              OBSERVER,STABLE
+ora.diskmon
+      1        OFFLINE OFFLINE                               STABLE
+ora.drivers.acfs
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.evmd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.gipcd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.gpnpd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.mdnsd
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+ora.storage
+      1        ONLINE  ONLINE       ebsdb-kn-u1              STABLE
+--------------------------------------------------------------------------------
