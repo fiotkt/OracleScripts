@@ -1,0 +1,10 @@
+Hello Lee !!
+Can you try to reproduce this Problem again having Tracing of the Data Guard Broker enabled this Time:
+
+DGMGRL> edit configuration set property 'TraceLevel' = 'SUPPORT';
+Reproduce the Problem
+DGMGRL> edit configuration set property 'TraceLevel' = 'USER';
+
+-> further Tracing will be written into the DRC.LOGs of all Instances, so upload the ALERT.LOGs and DRC.LOGs from all participating Instances covering this Attempt afterwards.
+
+Thank you and kind regards
