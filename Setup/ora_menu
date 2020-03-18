@@ -1,0 +1,80 @@
+#!/usr/bin/ksh
+umask 0022
+ORATAB=/etc/oratab
+BOLD=$(tput smso)
+UL=$(tput smul)
+NORM=$(tput sgr0)
+
+export ORACLE_BASE=/oracle
+
+# amend path to remove any oracle
+export PATH=$(echo $PATH | awk 'BEGIN{RS=":"} !/oracle/ && /^\// {print}' | \
+awk 'BEGIN{ORS=":"} {print}').
+
+i=1
+awk -F: '! /^$/ && ! /^#/ && ! /\*/ {print $1, $2} \
+END{print "CRS", "/oracle_crs/product/11.2.0/crs_2"}' ${ORATAB} | \
+while read ORASID[$i] ORAHOME[$i] DUMMY[$i]
+do
+        i=$(expr $i + 1)
+done
+
+echo -e "\n${BOLD}Please select required Oracle Environment:${NORM} \n"
+i=1
+echo -e "\t    ${UL}ORACLE ENV${NORM}    ${UL}ORACLE HOME                               ${NORM}\n"
+while [ "${ORASID[${i}]}" != "" ]
+do
+        printf "\t %d.   %-10.10s  %s\n" ${i} ${ORASID[${i}]} ${ORAHOME[${i}]}
+        i=$(expr ${i} + 1)
+done
+echo -e "\n\n Required environment : \c"
+while read reply
+do
+        case ${reply} in
+        [0-9] | [0-9][0-9])
+                if [[ ${reply} -lt 1 || ${reply} -ge ${i} ]] ; then
+                        echo -e "\0007"
+                        echo -e" Invalid Selection"
+                        echo -e "\n\n Required environment : \c"
+                else
+                        break
+                fi
+                ;;
+        *)
+                # Go round again!
+                echo -e "\0007"
+                echo -e " Invalid Selection"
+                echo -e "\n\n Required environment : \c"
+                ;;
+        esac
+done
+if [[ ${ORASID[${reply}]} == "CRS" ]] then
+        unset ORACLE_SID
+        export PS1='oracle@'$(uname -n | sed 's/crxsi//')':$PWD> '
+        export ORACLE_HOME=${ORAHOME[${reply}]}
+else
+        export ORACLE_SID=${ORASID[${reply}]}
+        export PS1='$ORACLE_SID@'$(uname -n | sed 's/crxsi//')':$PWD> '
+        export ORACLE_HOME=${ORAHOME[${reply}]}
+fi
+export PATH=$ORACLE_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib
+export CRS_HOME=/oracle_crs/product/11.2.0/crs_2
+export ORA_CRS_HOME=$CRS_HOME
+echo ${NORM}
+echo "---------------------------------------------------------------"
+echo "Oracle environment has been set for ${ORASID[${reply}]}"
+echo "---------------------------------------------------------------"
+echo -e "ORACLE_BASE=$ORACLE_BASE"
+echo -e "ORACLE_HOME=$ORACLE_HOME"
+echo -e "ORACLE_SID=$ORACLE_SID"
+echo -e "ORA_CRS_HOME=$ORA_CRS_HOME"
+echo -e " "
+
+unset ORASID ORAHOME DUMMY i reply BOLD UL NORM
+export PATH=$PATH:$ORA_CRS_HOME/bin
+alias si="sqlplus '/ as sysdba'"
+
+
+to execute
+/ ~/.ora_menu
