@@ -1,0 +1,1 @@
+crsctl modify res ora.cluster_interconnect.haip -attr "ENABLED=1" -init
