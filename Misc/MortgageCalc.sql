@@ -79,6 +79,32 @@ Total Repayed 234446.89
 END
 
 
+t amount is 136500 apr is 2.2% monthly repayments are 1200
+Amount remaining is 124987.33 for 01-SEP-22
+percentage of loan paid off 55.36
+Amount remaining is 113218.81 for 01-SEP-23
+percentage of loan paid off 59.56
+Amount remaining is 101188.73 for 01-SEP-24
+percentage of loan paid off 63.86
+Amount remaining is 88891.32 for 01-SEP-25
+percentage of loan paid off 68.25
+Amount remaining is 76320.62 for 01-SEP-26
+percentage of loan paid off 72.74
+Amount remaining is 63470.56 for 01-SEP-27
+percentage of loan paid off 77.33
+Amount remaining is 50334.93 for 01-SEP-28
+percentage of loan paid off 82.02
+Amount remaining is 36907.36 for 01-SEP-29
+percentage of loan paid off 86.82
+Amount remaining is 23181.41 for 01-SEP-30
+percentage of loan paid off 91.72
+Amount remaining is 9150.42 for 01-SEP-31
+percentage of loan paid off 96.73
+CONGRATS ***** t_amount is zero for 01-MAY-32
+Total Repayed 153222.12
+END
+
+
 /*
 set serveroutput on buffer 1000000
 declare
